@@ -7,6 +7,7 @@ Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`. See the [tests](t
 directory for examples. Other RDBMSs are not supported, see
 [details below](#support-for-other-rdbmss).
 
+Based on [xk6-sql exrension](https://github.com/msaf1980/xk6-sql)
 
 ## Build
 
@@ -28,19 +29,19 @@ Then:
 
 2. Build the binary:
   ```shell
-  xk6 build --with github.com/grafana/xk6-sql
+  xk6 build --with github.com/msaf1980/xk6-sqlx
   ```
 
   If you're using SQLite, ensure you have a C compiler installed (see the
   prerequisites note) and set `CGO_ENABLED=1` in the environment:
   ```shell
-  CGO_ENABLED=1 xk6 build --with github.com/grafana/xk6-sql
+  CGO_ENABLED=1 xk6 build --with github.com/msaf1980/xk6-sqlx
   ```
 
   On Windows this is done slightly differently:
   ```shell
   set CGO_ENABLED=1
-  xk6 build --with github.com/grafana/xk6-sql
+  xk6 build --with github.com/msaf1980/xk6-sqlx
   ```
 
 ## Development
@@ -125,34 +126,3 @@ default ✓ [======================================] 1 VUs  00m00.0s/10m0s  1/1 
 Note that this project is not accepting support for additional SQL implementations
 and RDBMSs. See the discussion in [issue #17](https://github.com/grafana/xk6-sql/issues/17)
 for the reasoning.
-
-There are however forks of this project that add additional support for:
-- [Oracle](https://github.com/stefnedelchev/xk6-sql-with-oracle)
-- [Snowflake](https://github.com/libertymutual/xk6-sql)
-
-You can build k6 binaries by simply specifying these project URLs in `xk6 build`.
-E.g. `CGO_ENABLED=1 xk6 build --with github.com/stefnedelchev/xk6-sql-with-oracle`.
-Please report any issues with these extensions in their respective GitHub issue trackers,
-and not in grafana/xk6-sql.
-
-
-## Docker
-
-For those who do not have a Go development environment available, or simply want
-to run an extended version of `k6` as a container, Docker is an option to build
-and run the application.
-
-The following command will build a custom `k6` image incorporating the `xk6-sql` extension
-built from the local source files.
-```shell
-docker build -t grafana/k6-for-sql:latest .
-```
-Using this image, you may then execute the [tests/sqlite3_test.js](tests/sqlite3_test.js) script
-by running the following command:
-```shell
-docker run -v $PWD:/scripts -it --rm grafana/k6-for-sql:latest run /scripts/tests/sqlite3_test.js
-```
-For those on Mac or Linux, the `docker-run.sh` script simplifies the command:
-```shell
-./docker-run.sh tests/sqlite3_test.js
-```
