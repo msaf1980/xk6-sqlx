@@ -1,11 +1,14 @@
-package sql
+package sqlx
 
 import (
-	dbsql "database/sql"
 	"fmt"
+
+	dbsql "github.com/jmoiron/sqlx"
+
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	_ "github.com/mailru/go-clickhouse/v2"
 	_ "github.com/mattn/go-sqlite3"
 	"go.k6.io/k6/js/modules"
 )
@@ -56,7 +59,10 @@ func contains(array []string, element string) bool {
 // Open establishes a connection to the specified database type using
 // the provided connection string.
 func (*SQL) Open(database string, connectionString string) (*dbsql.DB, error) {
-	supportedDatabases := []string{"mysql", "postgres", "sqlite3", "sqlserver"}
+	supportedDatabases := []string{
+		"mysql", "postgres", "sqlite3", "sqlserver",
+		"chhttp", // clickhouse http mail.ru driver
+	}
 	if !contains(supportedDatabases, database) {
 		return nil, fmt.Errorf("database %s is not supported", database)
 	}
@@ -80,6 +86,8 @@ func (*SQL) Query(db *dbsql.DB, query string, args ...interface{}) ([]keyValue, 
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
 	values := make([]interface{}, len(cols))
 	valuePtrs := make([]interface{}, len(cols))
 	result := make([]keyValue, 0)
@@ -102,6 +110,26 @@ func (*SQL) Query(db *dbsql.DB, query string, args ...interface{}) ([]keyValue, 
 		result = append(result, data)
 	}
 
-	rows.Close()
+	return result, nil
+}
+
+// Query executes the provided query string against the database, while
+// providing results as a slice of KeyValue instance(s) if available.
+func (*SQL) Queryx(db *dbsql.DB, query string, args map[string]interface{}) ([]keyValue, error) {
+	fmt.Printf("%#+v\n", args)
+	rows, err := db.NamedQuery(query, args)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]keyValue, 0, 1024)
+	for rows.Next() {
+		row := make(keyValue)
+		err = rows.MapScan(row)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, row)
+	}
 	return result, nil
 }

@@ -29,4 +29,12 @@ format:
 test:
 	go test -cover -race ./...
 
+integration_sqlite3: integration_sqlite3_simple integration_sqlite3_map
+
+integration_sqlite3_simple:
+	./k6 run --no-color tests/sqlite3_test.js
+
+integration_sqlite3_map:
+	./k6 run --no-color tests/sqlite3_map_test.js
+
 .PHONY: build clean format help test

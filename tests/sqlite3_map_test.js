@@ -24,7 +24,7 @@ export function teardown() {
 export default function () {
   db.exec("INSERT INTO keyvalues (key, value) VALUES('plugin-name', 'k6-plugin-sql');");
 
-  let res = sql.query(db, "SELECT * FROM keyvalues WHERE key = $1;", 'plugin-name');
+  let res = sql.queryx(db, "SELECT * FROM keyvalues WHERE key = :key;", { "key": 'plugin-name'});
   check(res, {
     'fetch': (r) => r.length >= 0,
   });
