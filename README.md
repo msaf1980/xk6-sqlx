@@ -7,7 +7,7 @@ Supported RDBMSs: `mysql`, `postgres`, `sqlite3`, `sqlserver`. See the [tests](t
 directory for examples. Other RDBMSs are not supported, see
 [details below](#support-for-other-rdbmss).
 
-Based on [xk6-sql exrension](https://github.com/msaf1980/xk6-sql)
+Based on [xk6-sql] (https://github.com/msaf1980/xk6-sql) exrension, but also support naming parameters.
 
 ## Build
 
