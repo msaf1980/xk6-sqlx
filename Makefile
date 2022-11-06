@@ -21,6 +21,11 @@ build:
 	go install go.k6.io/xk6/cmd/xk6@latest
 	CGO_ENABLED=1 xk6 build --with $(shell go list -m)=.
 
+## build: Builds a custom 'k6' with the local extension. 
+build-static:
+	go install go.k6.io/xk6/cmd/xk6@latest
+	CGO_ENABLED=0 xk6 build --with $(shell go list -m)=.
+
 ## format: Applies Go formatting to code.
 format:
 	go fmt ./...
