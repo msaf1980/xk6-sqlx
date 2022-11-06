@@ -29,6 +29,12 @@ jobs:
         run: |
           go install go.k6.io/xk6/cmd/xk6@latest
           xk6 build --with ${{ steps.module-name.outputs.Module }}=.
+      - name: Install sqlite
+        run: sudo apt-get install -y libsqlite3-dev
+      - name: Verify build with CGO_ENABLED=1
+        run: make build
+      - name: Run sqlite intergration tests
+        run: make integration_sqlite3
 
   run-unit-tests:
     runs-on: ubuntu-latest
@@ -40,4 +46,4 @@ jobs:
         with:
           go-version: 1.17.x
       - name: Run unit tests
-        run: go test -v -cover -race ./...
+        run: make test
